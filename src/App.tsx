@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useTasks } from './hooks/useTasks'
 import { useUpdateStatus } from './hooks/useUpdateStatus'
+import { useDeleteTask } from './hooks/useDeleteTask'
 import { TaskForm } from './components/TaskForm'
 import {
   TASK_PRIORITY_META,
@@ -12,9 +13,11 @@ import type { Task, TaskStatus } from './types/task'
 export default function App() {
   const { data, isPending, isError, refetch } = useTasks()
   const updateStatus = useUpdateStatus()
+  const deleteTask = useDeleteTask()
   const [modal, setModal] = useState<{ open: boolean; task?: Task }>({
     open: false,
   })
+  const [deletingTask, setDeletingTask] = useState<Task | null>(null)
 
   function openCreateModal() {
     setModal({ open: true })
@@ -26,6 +29,11 @@ export default function App() {
 
   function closeModal() {
     setModal({ open: false })
+  }
+
+  function openDeleteDialog(task: Task) {
+    deleteTask.reset()
+    setDeletingTask(task)
   }
 
   if (isPending) {
@@ -92,6 +100,13 @@ export default function App() {
                 >
                   Редактировать
                 </button>
+                <button
+                  type="button"
+                  className="btn-danger"
+                  onClick={() => openDeleteDialog(task)}
+                >
+                  Удалить
+                </button>
               </div>
             </li>
           ))}
@@ -108,6 +123,44 @@ export default function App() {
           >
             <h2>{modal.task ? 'Редактировать задачу' : 'Новая задача'}</h2>
             <TaskForm task={modal.task} onClose={closeModal} />
+          </div>
+        </div>
+      )}
+
+      {deletingTask && (
+        <div className="modal-overlay" onClick={() => setDeletingTask(null)}>
+          <div
+            className="modal"
+            role="dialog"
+            aria-modal="true"
+            onClick={(event) => event.stopPropagation()}
+          >
+            <h2>Удалить задачу?</h2>
+            <p>Действие необратимо. Задача «{deletingTask.title}» будет удалена.</p>
+            {deleteTask.isError && (
+              <p className="error-block">{deleteTask.error?.message}</p>
+            )}
+            <div className="modal-actions">
+              <button
+                type="button"
+                className="btn-secondary"
+                onClick={() => setDeletingTask(null)}
+              >
+                Отмена
+              </button>
+              <button
+                type="button"
+                className="btn-danger"
+                disabled={deleteTask.isPending}
+                onClick={() =>
+                  deleteTask.mutate(deletingTask.id, {
+                    onSuccess: () => setDeletingTask(null),
+                  })
+                }
+              >
+                {deleteTask.isPending ? 'Удаление…' : 'Удалить'}
+              </button>
+            </div>
           </div>
         </div>
       )}

@@ -149,6 +149,25 @@ h1 {
   background: #f9fafb;
 }
 
+.btn-danger {
+  padding: 8px 16px;
+  border: 1px solid #fecaca;
+  border-radius: 6px;
+  background: #ffffff;
+  color: #b91c1c;
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.btn-danger:hover {
+  background: #fef2f2;
+}
+
+.btn-danger:disabled {
+  opacity: 0.6;
+  cursor: default;
+}
+
 .modal-overlay {
   position: fixed;
   inset: 0;
