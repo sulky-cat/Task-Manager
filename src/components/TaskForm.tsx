@@ -1,8 +1,10 @@
-import { type FormEvent } from 'react'
+import { useForm } from 'react-hook-form'
+import { zodResolver } from '@hookform/resolvers/zod'
 import { useCreateTask } from '../hooks/useCreateTask'
 import { useUpdateTask } from '../hooks/useUpdateTask'
 import { TASK_PRIORITY_META, TASK_STATUS_META } from '../utils/format'
-import type { NewTask, Task, TaskPriority, TaskStatus } from '../types/task'
+import { taskFormSchema, type TaskFormValues } from '../schemas/task'
+import type { Task } from '../types/task'
 
 interface TaskFormProps {
   task?: Task
@@ -13,18 +15,32 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
   const createTask = useCreateTask()
   const updateTask = useUpdateTask()
   const isEdit = task !== undefined
+
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<TaskFormValues>({
+    resolver: zodResolver(taskFormSchema),
+    defaultValues: task
+      ? {
+          title: task.title,
+          description: task.description,
+          status: task.status,
+          priority: task.priority,
+        }
+      : {
+          title: '',
+          description: '',
+          status: 'todo',
+          priority: 'medium',
+        },
+  })
+
   const isPending = isEdit ? updateTask.isPending : createTask.isPending
   const isError = isEdit ? updateTask.isError : createTask.isError
 
-  function handleSubmit(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const formData = new FormData(event.currentTarget)
-    const values: NewTask = {
-      title: String(formData.get('title')),
-      description: String(formData.get('description') ?? ''),
-      status: formData.get('status') as TaskStatus,
-      priority: formData.get('priority') as TaskPriority,
-    }
+  function onSubmit(values: TaskFormValues) {
     if (isEdit && task) {
       updateTask.mutate({ id: task.id, ...values }, { onSuccess: onClose })
     } else {
@@ -33,18 +49,19 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit}>
+    <form onSubmit={handleSubmit(onSubmit)} noValidate>
       <label>
         Название
-        <input type="text" name="title" required autoFocus defaultValue={task?.title} />
+        <input type="text" {...register('title')} autoFocus />
+        {errors.title && <span className="field-error">{errors.title.message}</span>}
       </label>
       <label>
         Описание
-        <textarea name="description" rows={3} defaultValue={task?.description} />
+        <textarea rows={3} {...register('description')} />
       </label>
       <label>
         Статус
-        <select name="status" defaultValue={task?.status ?? 'todo'}>
+        <select {...register('status')}>
           {Object.entries(TASK_STATUS_META).map(([value, label]) => (
             <option key={value} value={value}>
               {label}
@@ -54,7 +71,7 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
       </label>
       <label>
         Приоритет
-        <select name="priority" defaultValue={task?.priority ?? 'medium'}>
+        <select {...register('priority')}>
           {Object.entries(TASK_PRIORITY_META).map(([value, label]) => (
             <option key={value} value={value}>
               {label}
@@ -71,7 +88,11 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
         <button type="button" className="btn-secondary" onClick={onClose}>
           Отмена
         </button>
-        <button type="submit" className="btn-primary" disabled={isPending}>
+        <button
+          type="submit"
+          className="btn-primary"
+          disabled={isSubmitting || isPending}
+        >
           {isPending ? 'Сохранение…' : isEdit ? 'Сохранить' : 'Создать'}
         </button>
       </div>

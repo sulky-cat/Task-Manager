@@ -222,6 +222,11 @@ h1 {
   resize: vertical;
 }
 
+.field-error {
+  color: #b91c1c;
+  font-size: 13px;
+}
+
 .modal-actions {
   display: flex;
   justify-content: flex-end;
