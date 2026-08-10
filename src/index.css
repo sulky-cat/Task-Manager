@@ -151,6 +151,27 @@ h1 {
   margin-bottom: 16px;
 }
 
+.filters {
+  display: flex;
+  gap: 12px;
+  margin-bottom: 16px;
+}
+
+.filters .search-input {
+  flex: 1;
+  margin-bottom: 0;
+}
+
+.filter-select {
+  padding: 8px 12px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font: inherit;
+  color: #111827;
+  background: #ffffff;
+  cursor: pointer;
+}
+
 .btn-primary {
   padding: 8px 16px;
   border: none;

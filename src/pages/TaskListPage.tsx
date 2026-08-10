@@ -1,5 +1,5 @@
 import { useState } from 'react'
-import { Link } from 'react-router'
+import { Link, useSearchParams } from 'react-router'
 import { useTasks } from '../hooks/useTasks'
 import { useUpdateStatus } from '../hooks/useUpdateStatus'
 import { useDebouncedValue } from '../hooks/useDebouncedValue'
@@ -14,11 +14,13 @@ import {
 import type { Task, TaskStatus } from '../types/task'
 
 export function TaskListPage() {
-  const [search, setSearch] = useState('')
-  const debouncedSearch = useDebouncedValue(search, 300)
-  const query = debouncedSearch.trim()
+  const [searchParams, setSearchParams] = useSearchParams()
+  const q = searchParams.get('q') ?? ''
+  const status = searchParams.get('status') ?? ''
+  const debouncedQuery = useDebouncedValue(q, 300)
+  const query = debouncedQuery.trim()
   const hasQuery = query.length > 0
-  const { data, isPending, isError, refetch } = useTasks(query)
+  const { data, isPending, isError, refetch } = useTasks(query, status)
   const updateStatus = useUpdateStatus()
   const [modal, setModal] = useState<{ open: boolean; task?: Task }>({
     open: false,
@@ -37,6 +39,26 @@ export function TaskListPage() {
     setModal({ open: false })
   }
 
+  function updateParam(key: string, value: string, replace: boolean) {
+    setSearchParams(
+      (prev) => {
+        const next = new URLSearchParams(prev)
+        if (value) next.set(key, value)
+        else next.delete(key)
+        return next
+      },
+      { replace },
+    )
+  }
+
+  function handleSearchChange(value: string) {
+    updateParam('q', value, true)
+  }
+
+  function handleStatusChange(value: string) {
+    updateParam('status', value, false)
+  }
+
   return (
     <main>
       <div className="list-header">
@@ -46,13 +68,27 @@ export function TaskListPage() {
         </button>
       </div>
 
-      <input
-        type="search"
-        className="search-input"
-        placeholder="Поиск по названию"
-        value={search}
-        onChange={(event) => setSearch(event.target.value)}
-      />
+      <div className="filters">
+        <input
+          type="search"
+          className="search-input"
+          placeholder="Поиск по названию"
+          value={q}
+          onChange={(event) => handleSearchChange(event.target.value)}
+        />
+        <select
+          className="filter-select"
+          value={status}
+          onChange={(event) => handleStatusChange(event.target.value)}
+        >
+          <option value="">Все статусы</option>
+          {Object.entries(TASK_STATUS_META).map(([value, label]) => (
+            <option key={value} value={value}>
+              {label}
+            </option>
+          ))}
+        </select>
+      </div>
 
       {isPending ? (
         <p className="status">Загрузка…</p>
