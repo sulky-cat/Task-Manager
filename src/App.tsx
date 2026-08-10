@@ -1,39 +1,31 @@
-import { useState, type SubmitEventHandler } from 'react'
+import { useState } from 'react'
 import { useTasks } from './hooks/useTasks'
-import { useCreateTask } from './hooks/useCreateTask'
-import { useUpdateTask } from './hooks/useUpdateTask'
+import { useUpdateStatus } from './hooks/useUpdateStatus'
+import { TaskForm } from './components/TaskForm'
 import {
   TASK_PRIORITY_META,
   TASK_STATUS_META,
   formatDate,
 } from './utils/format'
-import type { TaskPriority, TaskStatus } from './types/task'
+import type { Task, TaskStatus } from './types/task'
 
 export default function App() {
   const { data, isPending, isError, refetch } = useTasks()
-  const createTask = useCreateTask()
-  const updateTask = useUpdateTask()
-  const [isModalOpen, setIsModalOpen] = useState(false)
+  const updateStatus = useUpdateStatus()
+  const [modal, setModal] = useState<{ open: boolean; task?: Task }>({
+    open: false,
+  })
 
-  function openModal() {
-    createTask.reset()
-    setIsModalOpen(true)
+  function openCreateModal() {
+    setModal({ open: true })
   }
 
-  const handleSubmit: SubmitEventHandler<HTMLFormElement> = (e) => {
-    e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    createTask.mutate(
-      {
-        title: String(formData.get('title')),
-        description: String(formData.get('description') ?? ''),
-        status: formData.get('status') as TaskStatus,
-        priority: formData.get('priority') as TaskPriority,
-      },
-      {
-        onSuccess: () => setIsModalOpen(false),
-      },
-    )
+  function openEditModal(task: Task) {
+    setModal({ open: true, task })
+  }
+
+  function closeModal() {
+    setModal({ open: false })
   }
 
   if (isPending) {
@@ -58,7 +50,7 @@ export default function App() {
     <main>
       <div className="list-header">
         <h1>Список задач</h1>
-        <button type="button" className="btn-primary" onClick={openModal}>
+        <button type="button" className="btn-primary" onClick={openCreateModal}>
           Создать
         </button>
       </div>
@@ -75,7 +67,7 @@ export default function App() {
                 <select
                   value={task.status}
                   onChange={(event) =>
-                    updateTask.mutate({
+                    updateStatus.mutate({
                       id: task.id,
                       status: event.target.value as TaskStatus,
                     })
@@ -92,71 +84,30 @@ export default function App() {
               <time dateTime={task.createdAt}>
                 Создана: {formatDate(task.createdAt)}
               </time>
+              <div className="task-actions">
+                <button
+                  type="button"
+                  className="btn-secondary"
+                  onClick={() => openEditModal(task)}
+                >
+                  Редактировать
+                </button>
+              </div>
             </li>
           ))}
         </ul>
       )}
 
-      {isModalOpen && (
-        <div className="modal-overlay" onClick={() => setIsModalOpen(false)}>
+      {modal.open && (
+        <div className="modal-overlay" onClick={closeModal}>
           <div
             className="modal"
             role="dialog"
             aria-modal="true"
             onClick={(event) => event.stopPropagation()}
           >
-            <h2 id="modal-title">Новая задача</h2>
-            <form onSubmit={handleSubmit}>
-              <label>
-                Название
-                <input type="text" name="title" required autoFocus />
-              </label>
-              <label>
-                Описание
-                <textarea name="description" rows={3} />
-              </label>
-              <label>
-                Статус
-                <select name="status" defaultValue="todo">
-                  {Object.entries(TASK_STATUS_META).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              <label>
-                Приоритет
-                <select name="priority" defaultValue="medium">
-                  {Object.entries(TASK_PRIORITY_META).map(([value, label]) => (
-                    <option key={value} value={value}>
-                      {label}
-                    </option>
-                  ))}
-                </select>
-              </label>
-              {createTask.isError && (
-                <p className="error-block">
-                  Не удалось создать задачу. Проверьте, что сервер запущен.
-                </p>
-              )}
-              <div className="modal-actions">
-                <button
-                  type="button"
-                  className="btn-secondary"
-                  onClick={() => setIsModalOpen(false)}
-                >
-                  Отмена
-                </button>
-                <button
-                  type="submit"
-                  className="btn-primary"
-                  disabled={createTask.isPending}
-                >
-                  {createTask.isPending ? 'Сохранение…' : 'Создать'}
-                </button>
-              </div>
-            </form>
+            <h2>{modal.task ? 'Редактировать задачу' : 'Новая задача'}</h2>
+            <TaskForm task={modal.task} onClose={closeModal} />
           </div>
         </div>
       )}
