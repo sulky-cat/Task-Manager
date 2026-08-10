@@ -54,6 +54,23 @@ h1 {
   color: #9ca3af;
 }
 
+.task-list .status-select {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+  color: #6b7280;
+}
+
+.task-list select {
+  padding: 4px 8px;
+  border: 1px solid #d1d5db;
+  border-radius: 6px;
+  font: inherit;
+  color: #111827;
+  background: #ffffff;
+}
+
 .error-block {
   background: #fef2f2;
   border: 1px solid #fecaca;

@@ -1,6 +1,7 @@
 import { useState, type SubmitEventHandler } from 'react'
 import { useTasks } from './hooks/useTasks'
 import { useCreateTask } from './hooks/useCreateTask'
+import { useUpdateTask } from './hooks/useUpdateTask'
 import {
   TASK_PRIORITY_META,
   TASK_STATUS_META,
@@ -11,6 +12,7 @@ import type { TaskPriority, TaskStatus } from './types/task'
 export default function App() {
   const { data, isPending, isError, refetch } = useTasks()
   const createTask = useCreateTask()
+  const updateTask = useUpdateTask()
   const [isModalOpen, setIsModalOpen] = useState(false)
 
   function openModal() {
@@ -68,10 +70,25 @@ export default function App() {
           {data.map((task) => (
             <li key={task.id}>
               <h2>{task.title}</h2>
-              <p>
-                Статус: {TASK_STATUS_META[task.status]} · Приоритет:{' '}
-                {TASK_PRIORITY_META[task.priority]}
-              </p>
+              <label className="status-select">
+                Статус
+                <select
+                  value={task.status}
+                  onChange={(event) =>
+                    updateTask.mutate({
+                      id: task.id,
+                      status: event.target.value as TaskStatus,
+                    })
+                  }
+                >
+                  {Object.entries(TASK_STATUS_META).map(([value, label]) => (
+                    <option key={value} value={value}>
+                      {label}
+                    </option>
+                  ))}
+                </select>
+              </label>
+              <p>Приоритет: {TASK_PRIORITY_META[task.priority]}</p>
               <time dateTime={task.createdAt}>
                 Создана: {formatDate(task.createdAt)}
               </time>
