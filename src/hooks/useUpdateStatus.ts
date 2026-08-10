@@ -31,6 +31,7 @@ export function useUpdateStatus() {
     },
     onSettled: () => {
       queryClient.invalidateQueries({ queryKey: ['tasks'] })
+      queryClient.invalidateQueries({ queryKey: ['task'] })
     },
   })
 }
