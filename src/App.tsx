@@ -2,6 +2,7 @@ import { useState } from 'react'
 import { useTasks } from './hooks/useTasks'
 import { useUpdateStatus } from './hooks/useUpdateStatus'
 import { useDeleteTask } from './hooks/useDeleteTask'
+import { useDebouncedValue } from './hooks/useDebouncedValue'
 import { TaskForm } from './components/TaskForm'
 import {
   TASK_PRIORITY_META,
@@ -11,7 +12,11 @@ import {
 import type { Task, TaskStatus } from './types/task'
 
 export default function App() {
-  const { data, isPending, isError, refetch } = useTasks()
+  const [search, setSearch] = useState('')
+  const debouncedSearch = useDebouncedValue(search, 300)
+  const query = debouncedSearch.trim()
+  const hasQuery = query.length > 0
+  const { data, isPending, isError, refetch } = useTasks(query)
   const updateStatus = useUpdateStatus()
   const deleteTask = useDeleteTask()
   const [modal, setModal] = useState<{ open: boolean; task?: Task }>({
@@ -36,24 +41,6 @@ export default function App() {
     setDeletingTask(task)
   }
 
-  if (isPending) {
-    return <p className="status">Загрузка…</p>
-  }
-
-  if (isError) {
-    return (
-      <main>
-        <h1>Список задач</h1>
-        <div className="error-block">
-          <p>Не удалось загрузить задачи. Проверьте, что сервер запущен.</p>
-          <button type="button" onClick={() => refetch()}>
-            Повторить
-          </button>
-        </div>
-      </main>
-    )
-  }
-
   return (
     <main>
       <div className="list-header">
@@ -63,8 +50,25 @@ export default function App() {
         </button>
       </div>
 
-      {data.length === 0 ? (
-        <p className="status">Задач пока нет</p>
+      <input
+        type="search"
+        className="search-input"
+        placeholder="Поиск по названию"
+        value={search}
+        onChange={(event) => setSearch(event.target.value)}
+      />
+
+      {isPending ? (
+        <p className="status">Загрузка…</p>
+      ) : isError ? (
+        <div className="error-block">
+          <p>Не удалось загрузить задачи. Проверьте, что сервер запущен.</p>
+          <button type="button" onClick={() => refetch()}>
+            Повторить
+          </button>
+        </div>
+      ) : data.length === 0 ? (
+        <p className="status">{hasQuery ? 'Ничего не найдено' : 'Задач пока нет'}</p>
       ) : (
         <ul className="task-list">
           {data.map((task) => (
