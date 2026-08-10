@@ -1,40 +1,45 @@
-import { useEffect, useState } from 'react'
-import type { Task } from './types/task'
+import { useTasks } from './hooks/useTasks'
 import { TASK_STATUS_META, formatDate } from './utils/format'
 
 export default function App() {
-  const [tasks, setTasks] = useState<Task[]>([])
-  const [isPending, setIsPending] = useState(true)
-
-  useEffect(() => {
-    fetch('/api/tasks')
-      .then((response) => response.json())
-      .then((data: Task[]) => {
-        setTasks(data)
-      })
-      .finally(() => {
-        setIsPending(false)
-      })
-  }, [])
+  const { data, isPending, isError, refetch } = useTasks()
 
   if (isPending) {
     return <p className="status">Загрузка…</p>
   }
 
+  if (isError) {
+    return (
+      <main>
+        <h1>Список задач</h1>
+        <div className="error-block">
+          <p>Не удалось загрузить задачи. Проверьте, что сервер запущен.</p>
+          <button type="button" onClick={() => refetch()}>
+            Повторить
+          </button>
+        </div>
+      </main>
+    )
+  }
+
   return (
     <main>
       <h1>Список задач</h1>
-      <ul className="task-list">
-        {tasks.map((task) => (
-          <li key={task.id}>
-            <h2>{task.title}</h2>
-            <p>Статус: {TASK_STATUS_META[task.status]}</p>
-            <time dateTime={task.createdAt}>
-              Создана: {formatDate(task.createdAt)}
-            </time>
-          </li>
-        ))}
-      </ul>
+      {data.length === 0 ? (
+        <p className="status">Задач пока нет</p>
+      ) : (
+        <ul className="task-list">
+          {data.map((task) => (
+            <li key={task.id}>
+              <h2>{task.title}</h2>
+              <p>Статус: {TASK_STATUS_META[task.status]}</p>
+              <time dateTime={task.createdAt}>
+                Создана: {formatDate(task.createdAt)}
+              </time>
+            </li>
+          ))}
+        </ul>
+      )}
     </main>
   )
 }
