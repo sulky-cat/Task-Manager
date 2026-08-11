@@ -1,5 +1,5 @@
 import { useQuery } from '@tanstack/react-query'
-import type { Task } from '../types/task'
+import type { Task } from '@/types/task'
 
 export function useTasks(search: string = '', status: string = '') {
   return useQuery({

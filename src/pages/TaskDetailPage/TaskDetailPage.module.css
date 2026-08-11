@@ -1,0 +1,14 @@
+.page {
+  padding: var(--space-6) var(--space-4);
+}
+
+.container {
+  max-width: 720px;
+  margin: 0 auto;
+}
+
+@media (max-width: 640px) {
+  .page {
+    padding: var(--space-4) var(--space-3);
+  }
+}

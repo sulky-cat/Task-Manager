@@ -1,7 +1,5 @@
 import { Routes, Route } from 'react-router'
-import { TaskListPage } from './pages/TaskListPage'
-import { TaskDetailPage } from './pages/TaskDetailPage'
-import { NotFoundPage } from './pages/NotFoundPage'
+import { TaskListPage, TaskDetailPage, NotFoundPage } from '@/pages'
 
 export default function App() {
   return (

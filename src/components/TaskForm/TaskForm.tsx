@@ -1,10 +1,12 @@
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
-import { useCreateTask } from '../hooks/useCreateTask'
-import { useUpdateTask } from '../hooks/useUpdateTask'
-import { TASK_PRIORITY_META, TASK_STATUS_META } from '../utils/format'
-import { taskFormSchema, type TaskFormValues } from '../schemas/task'
-import type { Task } from '../types/task'
+import { useCreateTask } from '@/hooks/useCreateTask'
+import { useUpdateTask } from '@/hooks/useUpdateTask'
+import { TASK_PRIORITY_META, TASK_STATUS_META } from '@/utils/format'
+import { taskFormSchema, type TaskFormValues } from '@/schemas/task'
+import { Button } from '@/components/Button'
+import type { Task } from '@/types/task'
+import styles from './TaskForm.module.css'
 
 interface TaskFormProps {
   task?: Task
@@ -39,6 +41,9 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
 
   const isPending = isEdit ? updateTask.isPending : createTask.isPending
   const isError = isEdit ? updateTask.isError : createTask.isError
+  const titleInputClass = errors.title
+    ? `${styles.input} ${styles.inputError}`
+    : styles.input
 
   function onSubmit(values: TaskFormValues) {
     if (isEdit && task) {
@@ -49,32 +54,36 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
   }
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} noValidate>
-      <label>
+    <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
+      <label className={styles.field}>
         Название
-        <input type="text" {...register('title')} autoFocus />
-        {errors.title && <span className="field-error">{errors.title.message}</span>}
+        <input type="text" className={titleInputClass} {...register('title')} autoFocus />
+        {errors.title && <span className={styles.fieldError}>{errors.title.message}</span>}
       </label>
-      <label>
+      <label className={styles.field}>
         Описание
-        <textarea rows={3} {...register('description')} />
+        <textarea
+          className={`${styles.input} ${styles.textarea}`}
+          rows={3}
+          {...register('description')}
+        />
       </label>
-      <label>
+      <label className={styles.field}>
         Статус
-        <select {...register('status')}>
-          {Object.entries(TASK_STATUS_META).map(([value, label]) => (
+        <select className={styles.input} {...register('status')}>
+          {Object.entries(TASK_STATUS_META).map(([value, meta]) => (
             <option key={value} value={value}>
-              {label}
+              {meta.label}
             </option>
           ))}
         </select>
       </label>
-      <label>
+      <label className={styles.field}>
         Приоритет
-        <select {...register('priority')}>
-          {Object.entries(TASK_PRIORITY_META).map(([value, label]) => (
+        <select className={styles.input} {...register('priority')}>
+          {Object.entries(TASK_PRIORITY_META).map(([value, meta]) => (
             <option key={value} value={value}>
-              {label}
+              {meta.label}
             </option>
           ))}
         </select>
@@ -84,17 +93,13 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
           Не удалось сохранить задачу. Проверьте, что сервер запущен.
         </p>
       )}
-      <div className="modal-actions">
-        <button type="button" className="btn-secondary" onClick={onClose}>
+      <div className={styles.actions}>
+        <Button variant="ghost" onClick={onClose}>
           Отмена
-        </button>
-        <button
-          type="submit"
-          className="btn-primary"
-          disabled={isSubmitting || isPending}
-        >
+        </Button>
+        <Button type="submit" disabled={isSubmitting || isPending}>
           {isPending ? 'Сохранение…' : isEdit ? 'Сохранить' : 'Создать'}
-        </button>
+        </Button>
       </div>
     </form>
   )
