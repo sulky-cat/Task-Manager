@@ -1,36 +1,52 @@
 {
   "tasks": [
     {
-      "id": "3f0f2c4e-9c1a-4d6b-8b7a-5e2d9f1a6b01",
-      "title": "Под",
-      "description": "Собрать каркас интерфейса: список задач, фильтры по статусу, поле поиска и модальное окно создания задачи.",
-      "status": "in_progress",
-      "priority": "medium",
+      "title": "Сделать тестовое",
+      "description": "Написать Task Manager на React + TS. Ни одного any. Я проверил.",
+      "status": "done",
+      "priority": "high",
+      "id": "1faea62c-cc8a-4e27-8ed9-9fa9d09fae01",
       "createdAt": "2026-08-01T09:00:00.000Z"
     },
     {
-      "id": "3f0f2c4e-9c1a-4d6b-8b7a-5e2d9f1a6b02",
-      "title": "Сообрать ",
-      "description": "Что-то сделать, но что же",
+      "title": "Пройти собеседование",
+      "description": "Приятно поговорить с хорошими людьми.",
       "status": "in_progress",
-      "priority": "low",
-      "createdAt": "2026-08-02T10:30:00.000Z"
-    },
-    {
-      "title": "ytyt",
-      "description": "ythtyht",
-      "status": "todo",
-      "priority": "medium",
-      "id": "ca9324e8-1db7-48a6-b1cc-237e82a0dd0b",
-      "createdAt": "2026-08-10T16:06:09.039Z"
+      "priority": "high",
+      "id": "1faea62c-cc8a-4e27-8ed9-9fa9d09fae02",
+      "createdAt": "2026-08-05T12:30:00.000Z"
     },
     {
       "title": "Получить оффер",
-      "description": "Скинуть тестовое, пройти собеседование и получить оффер",
-      "status": "in_progress",
+      "description": "Дождаться письма и красиво сказать «да».",
+      "status": "todo",
       "priority": "high",
-      "id": "1faea62c-cc8a-4e27-8ed9-9fa9d09fae86",
+      "id": "1faea62c-cc8a-4e27-8ed9-9fa9d09fae03",
       "createdAt": "2026-08-10T20:00:23.549Z"
+    },
+    {
+      "title": "Обновить статус на linkedIn",
+      "description": "Убрать «#opentowork»",
+      "status": "in_progress",
+      "priority": "medium",
+      "id": "1faea62c-cc8a-4e27-8ed9-9fa9d09fae04",
+      "createdAt": "2026-08-07T15:45:00.000Z"
+    },
+    {
+      "title": "Выспаться перед собеседованием",
+      "description": "Лечь пораньше. Хотя бы попытаться.",
+      "status": "todo",
+      "priority": "low",
+      "id": "1faea62c-cc8a-4e27-8ed9-9fa9d09fae05",
+      "createdAt": "2026-08-08T21:10:00.000Z"
+    },
+    {
+      "title": "Отпраздновать оффер",
+      "description": "Запланировать праздник. Не раньше, чем придёт оффер.",
+      "status": "todo",
+      "priority": "low",
+      "id": "1faea62c-cc8a-4e27-8ed9-9fa9d09fae06",
+      "createdAt": "2026-08-09T19:00:00.000Z"
     }
   ]
 }
