@@ -17,16 +17,21 @@ export function useUpdateStatus() {
     onMutate: async ({ id, status }) => {
       await queryClient.cancelQueries({ queryKey: ['tasks'] })
 
-      const previousTasks = queryClient.getQueryData<Task[]>(['tasks'])
+      const previous = queryClient.getQueriesData<Task[]>({
+        queryKey: ['tasks'],
+      })
 
-      queryClient.setQueryData<Task[]>(['tasks'], (old) =>
+      queryClient.setQueriesData<Task[]>({ queryKey: ['tasks'] }, (old) =>
         old?.map((task) => (task.id === id ? { ...task, status } : task)),
       )
-      return { previousTasks }
+
+      return { previous }
     },
     onError: (_error, _variables, context) => {
-      if (context?.previousTasks) {
-        queryClient.setQueryData<Task[]>(['tasks'], context.previousTasks)
+      if (context?.previous) {
+        for (const [key, data] of context.previous) {
+          queryClient.setQueryData(key, data)
+        }
       }
     },
     onSettled: () => {
