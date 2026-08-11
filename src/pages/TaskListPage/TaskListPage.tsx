@@ -18,8 +18,15 @@ export function TaskListPage() {
   const { q, status, query, hasQuery, handleSearchChange, handleStatusChange } =
     useTaskFilters()
   const { data, isPending, isError, refetch } = useTasks(query, status)
-  const { modal, deletingTask, openCreate, openEdit, closeModal, requestDelete, closeDelete } =
-    useTaskDialogs()
+  const {
+    modal,
+    deletingTask,
+    openCreate,
+    openEdit,
+    closeModal,
+    requestDelete,
+    closeDelete,
+  } = useTaskDialogs()
 
   return (
     <div className={styles.page}>
@@ -27,7 +34,11 @@ export function TaskListPage() {
         <div className={styles.header}>
           <div>
             <h1 className={styles.title}>Список задач</h1>
-            {data && <span className={styles.counter}>{formatTaskCount(data.length)}</span>}
+            {data && (
+              <span className={styles.counter}>
+                {formatTaskCount(data.length)}
+              </span>
+            )}
           </div>
           <Button onClick={openCreate}>
             <Plus size={16} />
@@ -50,11 +61,18 @@ export function TaskListPage() {
             onRetry={refetch}
           />
         ) : data.length === 0 ? (
-          <p className="status">{hasQuery ? 'Ничего не найдено' : 'Задач пока нет'}</p>
+          <p className="status">
+            {hasQuery ? 'Ничего не найдено' : 'Задач пока нет'}
+          </p>
         ) : (
           <ul className={styles.list}>
             {data.map((task) => (
-              <TaskItem key={task.id} task={task} onEdit={openEdit} onDelete={requestDelete} />
+              <TaskItem
+                key={task.id}
+                task={task}
+                onEdit={openEdit}
+                onDelete={requestDelete}
+              />
             ))}
           </ul>
         )}
@@ -67,7 +85,9 @@ export function TaskListPage() {
           <TaskForm task={modal.task} onClose={closeModal} />
         </Modal>
 
-        {deletingTask && <ConfirmDeleteDialog task={deletingTask} onClose={closeDelete} />}
+        {deletingTask && (
+          <ConfirmDeleteDialog task={deletingTask} onClose={closeDelete} />
+        )}
       </div>
     </div>
   )

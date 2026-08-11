@@ -1,6 +1,10 @@
 import { Pencil, Trash2 } from 'lucide-react'
 import { Badge, Button } from '@/components'
-import { TASK_PRIORITY_META, TASK_STATUS_META, formatDate } from '@/utils/format'
+import {
+  TASK_PRIORITY_META,
+  TASK_STATUS_META,
+  formatDate,
+} from '@/utils/format'
 import type { Task } from '@/types/task'
 import styles from './TaskDetails.module.css'
 
@@ -18,7 +22,9 @@ export function TaskDetails({ task, onEdit, onDelete }: TaskDetailsProps) {
         <Badge meta={TASK_PRIORITY_META[task.priority]} />
       </div>
       <h1 className={styles.title}>{task.title}</h1>
-      {task.description && <p className={styles.description}>{task.description}</p>}
+      {task.description && (
+        <p className={styles.description}>{task.description}</p>
+      )}
       <div className={styles.meta}>
         <div className={styles.metaItem}>
           <span className={styles.metaLabel}>Дата создания</span>

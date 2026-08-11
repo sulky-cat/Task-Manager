@@ -2,7 +2,11 @@ import { Link } from 'react-router'
 import { Pencil, Trash2 } from 'lucide-react'
 import { useUpdateStatus } from '@/hooks/useUpdateStatus'
 import { Badge, Button } from '@/components'
-import { TASK_PRIORITY_META, TASK_STATUS_META, formatDate } from '@/utils/format'
+import {
+  TASK_PRIORITY_META,
+  TASK_STATUS_META,
+  formatDate,
+} from '@/utils/format'
 import type { Task, TaskStatus } from '@/types/task'
 import styles from './TaskItem.module.css'
 

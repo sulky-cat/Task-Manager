@@ -57,8 +57,15 @@ export function TaskForm({ task, onClose }: TaskFormProps) {
     <form className={styles.form} onSubmit={handleSubmit(onSubmit)} noValidate>
       <label className={styles.field}>
         Название
-        <input type="text" className={titleInputClass} {...register('title')} autoFocus />
-        {errors.title && <span className={styles.fieldError}>{errors.title.message}</span>}
+        <input
+          type="text"
+          className={titleInputClass}
+          {...register('title')}
+          autoFocus
+        />
+        {errors.title && (
+          <span className={styles.fieldError}>{errors.title.message}</span>
+        )}
       </label>
       <label className={styles.field}>
         Описание

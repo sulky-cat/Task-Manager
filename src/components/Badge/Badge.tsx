@@ -7,7 +7,10 @@ interface BadgeProps {
 
 export function Badge({ meta }: BadgeProps) {
   return (
-    <span className={styles.badge} style={{ color: meta.color, background: meta.background }}>
+    <span
+      className={styles.badge}
+      style={{ color: meta.color, background: meta.background }}
+    >
       {meta.label}
     </span>
   )
