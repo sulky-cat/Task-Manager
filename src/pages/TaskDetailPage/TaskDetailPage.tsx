@@ -1,15 +1,28 @@
-import { Link, useParams } from 'react-router'
+import { Link, useNavigate, useParams } from 'react-router'
 import { ArrowLeft } from 'lucide-react'
 import { TaskNotFoundError, useTask } from '@/hooks/useTask'
 import { useTaskDialogs } from '@/hooks/useTaskDialogs'
-import { Modal, TaskForm, ConfirmDeleteDialog, TaskDetails, ErrorState } from '@/components'
+import {
+  Modal,
+  TaskForm,
+  ConfirmDeleteDialog,
+  TaskDetails,
+  ErrorState,
+} from '@/components'
 import styles from './TaskDetailPage.module.css'
 
 export function TaskDetailPage() {
   const { id } = useParams<{ id: string }>()
+  const navigate = useNavigate()
   const { data, isPending, isError, error, refetch } = useTask(id!)
-  const { modal, deletingTask, openEdit, closeModal, requestDelete, closeDelete } =
-    useTaskDialogs()
+  const {
+    modal,
+    deletingTask,
+    openEdit,
+    closeModal,
+    requestDelete,
+    closeDelete,
+  } = useTaskDialogs()
   const isNotFound = error instanceof TaskNotFoundError
 
   return (
@@ -35,11 +48,21 @@ export function TaskDetailPage() {
           <TaskDetails task={data} onEdit={openEdit} onDelete={requestDelete} />
         )}
 
-        <Modal open={modal.open} title="Редактировать задачу" onClose={closeModal}>
+        <Modal
+          open={modal.open}
+          title="Редактировать задачу"
+          onClose={closeModal}
+        >
           <TaskForm task={modal.task} onClose={closeModal} />
         </Modal>
 
-        {deletingTask && <ConfirmDeleteDialog task={deletingTask} onClose={closeDelete} />}
+        {deletingTask && (
+          <ConfirmDeleteDialog
+            task={deletingTask}
+            onClose={closeDelete}
+            onSuccess={() => navigate('/')}
+          />
+        )}
       </div>
     </div>
   )

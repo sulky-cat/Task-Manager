@@ -8,15 +8,22 @@ import styles from './ConfirmDeleteDialog.module.css'
 interface ConfirmDeleteDialogProps {
   task: Task
   onClose: () => void
+  onSuccess?: () => void
 }
 
-export function ConfirmDeleteDialog({ task, onClose }: ConfirmDeleteDialogProps) {
+export function ConfirmDeleteDialog({
+  task,
+  onClose,
+  onSuccess,
+}: ConfirmDeleteDialogProps) {
   const deleteTask = useDeleteTask()
 
   return (
     <Modal title="Удалить задачу?" onClose={onClose}>
       <p>Действие необратимо. Задача «{task.title}» будет удалена.</p>
-      {deleteTask.isError && <p className="error-block">{deleteTask.error?.message}</p>}
+      {deleteTask.isError && (
+        <p className="error-block">{deleteTask.error?.message}</p>
+      )}
       <div className={styles.actions}>
         <Button variant="ghost" onClick={onClose}>
           Отмена
@@ -24,7 +31,14 @@ export function ConfirmDeleteDialog({ task, onClose }: ConfirmDeleteDialogProps)
         <Button
           variant="danger"
           disabled={deleteTask.isPending}
-          onClick={() => deleteTask.mutate(task.id, { onSuccess: onClose })}
+          onClick={() =>
+            deleteTask.mutate(task.id, {
+              onSuccess: () => {
+                onClose()
+                onSuccess?.()
+              },
+            })
+          }
         >
           <Trash2 size={16} />
           {deleteTask.isPending ? 'Удаление…' : 'Удалить'}
